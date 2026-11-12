@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>시약 관리로 이동</title>
+<script>
+  // ▼ Apps Script 웹앱 배포 주소를 그대로 붙여 넣으세요 (끝이 /exec)
+  const APP = 'https://script.google.com/a/macros/snu.ac.kr/s/AKfycbw_O0GOq6bo_oOy7jLmypIbXopfMJASYGwRkR2FbLVHd4OSThPNE0ocfX6XewEdEJhVkQ/exec';
+
+  // HTTPS://WAGO97.GITHUB.IO/C00012 → APP?id=C00012
+  const last = location.pathname.split('/').filter(Boolean).pop() || '';
+  const id = decodeURIComponent(last).trim().toUpperCase();
+  location.replace(/^C\d{3,8}$/.test(id) ? APP + '?id=' + id : APP);
+</script>
+</head>
+<body style="font-family:sans-serif;padding:24px">
+  <p>시약 관리 화면으로 이동하고 있습니다.</p>
+</body>
+</html>
