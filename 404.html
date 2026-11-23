@@ -3,17 +3,43 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>시약 관리로 이동</title>
+<title>재고 입출고로 이동</title>
 <script>
-  // ▼ Apps Script 웹앱 배포 주소를 그대로 붙여 넣으세요 (끝이 /exec)
-  const APP = 'https://script.google.com/a/macros/snu.ac.kr/s/AKfycbw9n_fgTJmiNsYsVfrulN79sT5y8HG4VPoxpEdjQ8LNgrvA4Z5CbvPSdSu2L3ECJU7b6w/exec';
-  // HTTPS://WAGO97.GITHUB.IO/C00012 → APP?id=C00012
-  const last = location.pathname.split('/').filter(Boolean).pop() || '';
-  const id = decodeURIComponent(last).trim().toUpperCase();
-  location.replace(/^C\d{3,8}$/.test(id) ? APP + '?id=' + id : APP);
+  /* ──────────────────────────────────────────────────────────────
+     QR 중계 페이지   —  index.html 과 404.html 에 똑같이 넣을 것
+       https://wago97.github.io/R0001-01   → 시약 입출고 폼
+       https://wago97.github.io/C00012     → 기존 재고 웹앱
+     E.coli 폼을 만든 뒤에는 FORM_ECOLI 한 줄만 채우면 된다.
+  ────────────────────────────────────────────────────────────── */
+
+  var FORM_REAGENT = 'https://docs.google.com/forms/d/e/1FAIpQLSdVLat2svUeaNtPn4O7aJckNvgvaCp1bEiHXxLxbKYGevjDQw/viewform?usp=pp_url&entry.107815318=ZZZ';
+  var FORM_ECOLI   = '';   // E.coli 폼 미리채움 주소 (아직 없음)
+  var APP          = 'https://script.google.com/a/macros/snu.ac.kr/s/AKfycbw9n_fgTJmiNsYsVfrulN79sT5y8HG4VPoxpEdjQ8LNgrvA4Z5CbvPSdSu2L3ECJU7b6w/exec';
+
+  var last = location.pathname.split('/').filter(Boolean).pop() || '';
+  var id   = decodeURIComponent(last).trim().toUpperCase();
+
+  function go(tpl, value) {
+    location.replace(tpl.replace('ZZZ', encodeURIComponent(value)));
+  }
+
+  if (/^C\d{3,8}$/.test(id)) {                    // 기존 웹앱 ID
+    location.replace(APP + '?id=' + id);
+  } else if (/^R\d{3,6}(-\d{2})?$/.test(id)) {     // 시약  R0001 / R0001-01
+    go(FORM_REAGENT, id);
+  } else if (id !== '' && FORM_ECOLI !== '') {     // E.coli 박스ID
+    go(FORM_ECOLI, id);
+  } else {
+    window.addEventListener('DOMContentLoaded', function () {
+      document.getElementById('msg').textContent =
+        id === '' ? '이동할 대상이 없습니다. 아래에서 직접 선택하십시오.'
+                  : '등록되지 않은 ID 입니다: ' + id;
+      document.getElementById('links').style.display = 'block';
+      document.getElementById('toReagent').href = FORM_REAGENT.replace('ZZZ', '');
+      document.getElementById('toApp').href = APP;
+    });
+  }
 </script>
 </head>
-<body style="font-family:sans-serif;padding:24px">
-  <p>시약 관리 화면으로 이동하고 있습니다.</p>
-</body>
-</html>
+<body style="font-family:sans-serif;padding:24px;line-height:1.7">
+  <p id="msg">입출고
